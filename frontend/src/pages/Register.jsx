@@ -1,0 +1,42 @@
+import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
+
+function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const res = await axios.post('http://localhost:8080/api/auth/register', { name, email, password });
+      localStorage.setItem('token', res.data.token);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Registration failed');
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: 400, margin: '80px auto', fontFamily: 'sans-serif' }}>
+      <h2>WeatherGuard Register</h2>
+      <form onSubmit={handleRegister}>
+        <input type="text" placeholder="Name" value={name} onChange={e => setName(e.target.value)}
+          style={{ width: '100%', padding: 10, marginBottom: 10 }} required />
+        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}
+          style={{ width: '100%', padding: 10, marginBottom: 10 }} required />
+        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}
+          style={{ width: '100%', padding: 10, marginBottom: 10 }} required />
+        <button type="submit" style={{ width: '100%', padding: 10 }}>Register</button>
+      </form>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <p>Already have an account? <Link to="/">Login</Link></p>
+    </div>
+  );
+}
+
+export default Register;
