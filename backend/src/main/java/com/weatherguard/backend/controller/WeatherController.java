@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.weatherguard.backend.model.WeatherData;
+import com.weatherguard.backend.repository.WeatherDataRepository;
 import com.weatherguard.backend.service.WeatherService;
 
 @RestController
@@ -16,6 +17,9 @@ public class WeatherController {
 
     @Autowired
     private WeatherService weatherService;
+
+    @Autowired
+    private WeatherDataRepository weatherDataRepository;
 
     @GetMapping("/fetch")
     public ResponseEntity<?> fetchWeather(
@@ -28,5 +32,10 @@ public class WeatherController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<?> getHistory(@RequestParam String location) {
+        return ResponseEntity.ok(weatherDataRepository.findByLocationNameOrderByFetchedAtDesc(location));
     }
 }

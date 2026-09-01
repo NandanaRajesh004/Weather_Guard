@@ -22,6 +22,7 @@ function Navbar() {
         <Link to="/dashboard" style={linkStyle}>Weather</Link>
         <Link to="/guidelines" style={linkStyle}>Guidelines</Link>
         <Link to="/risk-alerts" style={linkStyle}>Risk & Alerts</Link>
+        <Link to="/trends" style={linkStyle}>Trends</Link>
       </div>
       <button onClick={handleLogout} style={{ padding: '6px 14px' }}>Logout</button>
     </div>
