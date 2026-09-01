@@ -32,25 +32,23 @@ function RiskAlerts() {
     }
   };
 
-  const riskColor = (level) => {
-    if (level === 'HIGH') return '#d9534f';
-    if (level === 'MEDIUM') return '#f0ad4e';
-    return '#5cb85c';
+  const badgeClass = (level) => {
+    if (level === 'HIGH') return 'badge badge-high';
+    if (level === 'MEDIUM') return 'badge badge-medium';
+    return 'badge badge-low';
   };
 
-  const cardStyle = {
-    background: '#f4f6f9', padding: 20, borderRadius: 10, marginTop: 20
-  };
+  const cardStyle = { background: '#f4f6f9', padding: 20, borderRadius: 10, marginTop: 20 };
+
+  const riskSummary = risk ? ('Location: ' + risk.locationName + ' | Disaster: ' + risk.disasterType) : '';
+  const riskDetails = risk ? ('Temperature: ' + risk.temperature + ' C | Wind: ' + risk.windSpeed + ' km/h | Precipitation: ' + risk.precipitation + ' mm') : '';
 
   return (
-    <div style={{
-      maxWidth: 700, margin: '40px auto', background: 'white',
-      borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', overflow: 'hidden'
-    }}>
+    <div style={{ maxWidth: 700, margin: '40px auto', background: 'white', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
       <Navbar />
 
       <div style={{ padding: 30 }}>
-        <h3>Risk & Alerts</h3>
+        <h3>Risk and Alerts</h3>
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
           <div style={{ flex: 1 }}>
@@ -83,23 +81,20 @@ function RiskAlerts() {
         {risk && (
           <div style={cardStyle}>
             <h4>Risk Analysis Result</h4>
-            <p>Location: {risk.locationName}</p>
-            <p>Disaster Type: {risk.disasterType}</p>
-            <p>Temperature: {risk.temperature} C | Wind: {risk.windSpeed} km/h | Precipitation: {risk.precipitation} mm</p>
-            <p style={{ fontWeight: 700, color: riskColor(risk.riskLevel) }}>Risk Level: {risk.riskLevel}</p>
+            <p>{riskSummary}</p>
+            <p>{riskDetails}</p>
+            <span className={badgeClass(risk.riskLevel)}>{risk.riskLevel} RISK</span>
           </div>
         )}
 
         {alertResult && (
           <div style={cardStyle}>
             <h4>Alert Result</h4>
-            {alertResult.riskLevel === 'HIGH' || alertResult.riskLevel === 'MEDIUM' ? (
-              <>
-                <p style={{ fontWeight: 700, color: riskColor(alertResult.riskLevel) }}>
-                  {alertResult.riskLevel} risk alert for {alertResult.disasterType} in {alertResult.locationName}
-                </p>
-                <p>{alertResult.message}</p>
-              </>
+            {alertResult.riskLevel ? (
+              <div>
+                <span className={badgeClass(alertResult.riskLevel)}>{alertResult.riskLevel} RISK</span>
+                <p style={{ marginTop: 10 }}>{alertResult.message}</p>
+              </div>
             ) : (
               <p>{alertResult.message}</p>
             )}

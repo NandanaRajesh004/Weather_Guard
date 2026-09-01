@@ -2,6 +2,17 @@ import { useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 
+function getWeatherIcon(code) {
+  if (code === 0) return '☀️';
+  if (code >= 1 && code <= 3) return '⛅';
+  if (code >= 45 && code <= 48) return '🌫️';
+  if (code >= 51 && code <= 67) return '🌧️';
+  if (code >= 71 && code <= 77) return '❄️';
+  if (code >= 80 && code <= 82) return '🌦️';
+  if (code >= 95) return '⛈️';
+  return '🌡️';
+}
+
 function Dashboard() {
   const [location, setLocation] = useState('Kochi');
   const [lat, setLat] = useState('9.9312');
@@ -27,7 +38,7 @@ function Dashboard() {
       <Navbar />
 
       <div style={{ padding: 30 }}>
-        <div style={{ background: 'white', padding: 20, borderRadius: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+        <div style={{ background: '#f4f6f9', padding: 20, borderRadius: 10 }}>
           <h3>Weather Data</h3>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
             <div style={{ flex: 1 }}>
@@ -46,12 +57,33 @@ function Dashboard() {
           <button onClick={fetchWeather} style={{ padding: '8px 16px' }}>Fetch Weather</button>
 
           {weather && (
-            <div style={{ marginTop: 15, padding: 15, background: '#f4f6f9', borderRadius: 8 }}>
-              <p>Location: {weather.locationName}</p>
-              <p>Temperature: {weather.temperature} C</p>
-              <p>Humidity: {weather.humidity} percent</p>
-              <p>Wind Speed: {weather.windSpeed} km/h</p>
-              <p>Precipitation: {weather.precipitation} mm</p>
+            <div style={{ marginTop: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
+                <span className="weather-icon">{getWeatherIcon(weather.weatherCode)}</span>
+                <div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: '#1e3c72' }}>{weather.locationName}</div>
+                  <div style={{ fontSize: 28, fontWeight: 700 }}>{weather.temperature}°C</div>
+                </div>
+              </div>
+
+              <div className="stat-grid">
+                <div className="stat-box">
+                  <div className="label">Humidity</div>
+                  <div className="value">{weather.humidity}%</div>
+                </div>
+                <div className="stat-box">
+                  <div className="label">Wind Speed</div>
+                  <div className="value">{weather.windSpeed} km/h</div>
+                </div>
+                <div className="stat-box">
+                  <div className="label">Precipitation</div>
+                  <div className="value">{weather.precipitation} mm</div>
+                </div>
+                <div className="stat-box">
+                  <div className="label">Fetched</div>
+                  <div className="value" style={{ fontSize: 13 }}>{new Date(weather.fetchedAt).toLocaleTimeString()}</div>
+                </div>
+              </div>
             </div>
           )}
         </div>
