@@ -10,7 +10,11 @@ function RiskAlerts() {
   const [risk, setRisk] = useState(null);
   const [alertResult, setAlertResult] = useState(null);
 
-  const checkRisk = async () => {
+  const [riskLoading, setRiskLoading] = useState(false);
+const [alertLoading, setAlertLoading] = useState(false);
+
+const checkRisk = async () => {
+    setRiskLoading(true);
     try {
       const res = await axios.get('http://localhost:8080/api/risk/analyze', {
         params: { location: location, lat: lat, lon: lon, disasterType: disasterType }
@@ -18,10 +22,13 @@ function RiskAlerts() {
       setRisk(res.data);
     } catch (err) {
       alert('Failed to analyze risk');
+    } finally {
+      setRiskLoading(false);
     }
   };
 
   const checkAlert = async () => {
+    setAlertLoading(true);
     try {
       const res = await axios.get('http://localhost:8080/api/alerts/check', {
         params: { location: location, lat: lat, lon: lon, disasterType: disasterType }
@@ -29,9 +36,10 @@ function RiskAlerts() {
       setAlertResult(res.data);
     } catch (err) {
       alert('Failed to check alert');
+    } finally {
+      setAlertLoading(false);
     }
   };
-
   const badgeClass = (level) => {
     if (level === 'HIGH') return 'badge badge-high';
     if (level === 'MEDIUM') return 'badge badge-medium';
@@ -74,8 +82,12 @@ function RiskAlerts() {
         </div>
 
         <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={checkRisk} style={{ padding: '8px 16px' }}>Analyze Risk</button>
-          <button onClick={checkAlert} style={{ padding: '8px 16px' }}>Check Alert</button>
+          <button onClick={checkRisk} disabled={riskLoading} style={{ padding: '8px 16px' }}>
+  {riskLoading ? 'Analyzing...' : 'Analyze Risk'}
+</button>
+<button onClick={checkAlert} disabled={alertLoading} style={{ padding: '8px 16px' }}>
+  {alertLoading ? 'Checking...' : 'Check Alert'}
+</button>
         </div>
 
         {risk && (

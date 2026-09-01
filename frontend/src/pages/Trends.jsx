@@ -7,7 +7,10 @@ function Trends() {
   const [location, setLocation] = useState('Kochi');
   const [data, setData] = useState([]);
 
-  const fetchHistory = async () => {
+ const [loading, setLoading] = useState(false);
+
+const fetchHistory = async () => {
+    setLoading(true);
     try {
       const res = await axios.get('http://localhost:8080/api/weather/history', {
         params: { location: location }
@@ -25,6 +28,8 @@ function Trends() {
       setData(formatted);
     } catch (err) {
       alert('Failed to fetch history');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,7 +42,9 @@ function Trends() {
 
         <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
           <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Location" style={{ padding: 8, flex: 1 }} />
-          <button onClick={fetchHistory} style={{ padding: '8px 16px' }}>Load Trend</button>
+          <button onClick={fetchHistory} disabled={loading} style={{ padding: '8px 16px' }}>
+  {loading ? 'Loading...' : 'Load Trend'}
+</button>
         </div>
 
         {data.length > 0 && (

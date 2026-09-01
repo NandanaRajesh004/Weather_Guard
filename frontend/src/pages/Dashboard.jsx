@@ -19,7 +19,10 @@ function Dashboard() {
   const [lon, setLon] = useState('76.2673');
   const [weather, setWeather] = useState(null);
 
-  const fetchWeather = async () => {
+  const [loading, setLoading] = useState(false);
+
+const fetchWeather = async () => {
+    setLoading(true);
     try {
       const res = await axios.get('http://localhost:8080/api/weather/fetch', {
         params: { location: location, lat: lat, lon: lon }
@@ -27,9 +30,10 @@ function Dashboard() {
       setWeather(res.data);
     } catch (err) {
       alert('Failed to fetch weather');
+    } finally {
+      setLoading(false);
     }
   };
-
   return (
     <div style={{
       maxWidth: 700, margin: '40px auto', background: 'white',
@@ -54,7 +58,9 @@ function Dashboard() {
               <input value={lon} onChange={(e) => setLon(e.target.value)} style={{ padding: 8, width: 100 }} />
             </div>
           </div>
-          <button onClick={fetchWeather} style={{ padding: '8px 16px' }}>Fetch Weather</button>
+          <button onClick={fetchWeather} disabled={loading} style={{ padding: '8px 16px' }}>
+  {loading ? 'Loading...' : 'Fetch Weather'}
+</button>
 
           {weather && (
             <div style={{ marginTop: 20 }}>
