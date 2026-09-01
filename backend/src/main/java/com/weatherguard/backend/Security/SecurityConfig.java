@@ -24,7 +24,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/weather/**", "/api/guidelines/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/weather/**", "/api/guidelines/**", "/api/risk/**", "/api/alerts/**").permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();
