@@ -21,6 +21,7 @@ function Navbar() {
         <span style={{ color: 'white', fontWeight: 700, fontSize: 18, marginRight: 30 }}>WeatherGuard</span>
         <Link to="/dashboard" style={linkStyle}>Weather</Link>
         <Link to="/guidelines" style={linkStyle}>Guidelines</Link>
+        <Link to="/risk-alerts" style={linkStyle}>Risk & Alerts</Link>
       </div>
       <button onClick={handleLogout} style={{ padding: '6px 14px' }}>Logout</button>
     </div>
