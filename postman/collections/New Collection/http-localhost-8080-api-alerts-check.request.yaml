@@ -1,0 +1,11 @@
+$kind: http-request
+name: http://localhost:8080/api/alerts/check
+description: ""
+url: http://localhost:8080/api/alerts/check?location=Mumbai&lat=19.0760&lon=72.8777&disasterType=FLOOD
+method: GET
+queryParams:
+  location: Mumbai
+  lat: "19.0760"
+  lon: "72.8777"
+  disasterType: FLOOD
+order: 1788418831235

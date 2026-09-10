@@ -3,42 +3,134 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 
 function getWeatherIcon(code) {
-  if (code === 0) return '☀️';
-  if (code >= 1 && code <= 3) return '⛅';
-  if (code >= 45 && code <= 48) return '🌫️';
-  if (code >= 51 && code <= 67) return '🌧️';
-  if (code >= 71 && code <= 77) return '❄️';
-  if (code >= 80 && code <= 82) return '🌦️';
-  if (code >= 95) return '⛈️';
-  return '🌡️';
+  if (code === 0) return 'sun';
+  if (code >= 1 && code <= 3) return 'cloud';
+  if (code >= 45 && code <= 48) return 'fog';
+  if (code >= 51 && code <= 67) return 'rain';
+  if (code >= 71 && code <= 77) return 'snow';
+  if (code >= 80 && code <= 82) return 'showers';
+  if (code >= 95) return 'storm';
+  return 'thermometer';
+}
+
+function getWeatherEmoji(code) {
+  var kind = getWeatherIcon(code);
+  if (kind === 'sun') return String.fromCodePoint(0x2600);
+  if (kind === 'cloud') return String.fromCodePoint(0x26C5);
+  if (kind === 'fog') return String.fromCodePoint(0x1F32B);
+  if (kind === 'rain') return String.fromCodePoint(0x1F327);
+  if (kind === 'snow') return String.fromCodePoint(0x2744);
+  if (kind === 'showers') return String.fromCodePoint(0x1F326);
+  if (kind === 'storm') return String.fromCodePoint(0x26C8);
+  return String.fromCodePoint(0x1F321);
+}
+
+function getRecommendation(weather) {
+  var tips = [];
+  var code = weather.weatherCode;
+  var temp = weather.temperature;
+  var precip = weather.precipitation;
+  var dailyPrecip = weather.dailyPrecipitation || 0;
+
+  if ((code >= 51 && code <= 82) || precip > 0.1 || dailyPrecip > 1) {
+    tips.push(String.fromCodePoint(0x2614) + ' Looks like rain today - dont forget your umbrella!');
+  }
+  if (temp >= 35) {
+    tips.push(String.fromCodePoint(0x1F9F4) + ' Its going to be a hot one - grab your sunscreen!');
+    tips.push(String.fromCodePoint(0x1F4A7) + ' Remember to sip water often and stay cool.');
+  }
+  if (temp <= 15) {
+    tips.push(String.fromCodePoint(0x1F9E5) + ' A bit chilly out there - a cozy jacket would help.');
+  }
+  if (tips.length === 0) {
+    tips.push(String.fromCodePoint(0x1F31E) + ' Lovely weather today - enjoy your day!');
+  }
+  return tips;
 }
 
 function Dashboard() {
-  const [location, setLocation] = useState('Kochi');
-  const [lat, setLat] = useState('9.9312');
-  const [lon, setLon] = useState('76.2673');
-  const [weather, setWeather] = useState(null);
+  var locationState = useState('Kochi');
+  var location = locationState[0];
+  var setLocation = locationState[1];
 
-  const [loading, setLoading] = useState(false);
+  var latState = useState('9.9312');
+  var lat = latState[0];
+  var setLat = latState[1];
 
-const fetchWeather = async () => {
+  var lonState = useState('76.2673');
+  var lon = lonState[0];
+  var setLon = lonState[1];
+
+  var weatherState = useState(null);
+  var weather = weatherState[0];
+  var setWeather = weatherState[1];
+
+  var loadingState = useState(false);
+  var loading = loadingState[0];
+  var setLoading = loadingState[1];
+
+  var fetchWeather = function () {
     setLoading(true);
-    try {
-      const res = await axios.get('http://localhost:8080/api/weather/fetch', {
-        params: { location: location, lat: lat, lon: lon }
-      });
+    axios.get('http://localhost:8080/api/weather/fetch', {
+      params: { location: location, lat: lat, lon: lon }
+    }).then(function (res) {
       setWeather(res.data);
-    } catch (err) {
-      alert('Failed to fetch weather');
-    } finally {
       setLoading(false);
-    }
+    }).catch(function () {
+      alert('Failed to fetch weather');
+      setLoading(false);
+    });
   };
+
+  var weatherBlock = null;
+
+  if (weather) {
+    var tips = getRecommendation(weather);
+    var tipItems = tips.map(function (tip, index) {
+      return <li key={index} style={{ background: 'transparent', borderLeft: 'none', padding: '4px 0' }}>{tip}</li>;
+    });
+
+    weatherBlock = (
+      <div style={{ marginTop: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
+          <span className="weather-icon">{getWeatherEmoji(weather.weatherCode)}</span>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#1e3c72' }}>{weather.locationName}</div>
+            <div style={{ fontSize: 28, fontWeight: 700 }}>{weather.temperature} C</div>
+          </div>
+        </div>
+
+        <div className="stat-grid">
+          <div className="stat-box">
+            <div className="label">Humidity</div>
+            <div className="value">{weather.humidity}%</div>
+          </div>
+          <div className="stat-box">
+            <div className="label">Wind Speed</div>
+            <div className="value">{weather.windSpeed} km/h</div>
+          </div>
+          <div className="stat-box">
+            <div className="label">Precipitation</div>
+            <div className="value">{weather.precipitation} mm</div>
+          </div>
+          <div className="stat-box">
+            <div className="label">Fetched</div>
+            <div className="value" style={{ fontSize: 13 }}>{new Date(weather.fetchedAt).toLocaleTimeString()}</div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 15, padding: 15, background: '#fff8e1', borderRadius: 8, borderLeft: '4px solid #f0ad4e' }}>
+          <strong>Heres a little tip for today:</strong>
+          <ul style={{ marginTop: 8 }}>
+            {tipItems}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{
-      maxWidth: 700, margin: '40px auto', background: 'white',
-      borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', overflow: 'hidden'
-    }}>
+    <div style={{ maxWidth: 700, margin: '40px auto', background: 'white', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
       <Navbar />
 
       <div style={{ padding: 30 }}>
@@ -47,51 +139,22 @@ const fetchWeather = async () => {
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: 12, marginBottom: 4, color: '#555' }}>City / Location</label>
-              <input value={location} onChange={(e) => setLocation(e.target.value)} style={{ padding: 8, width: '100%' }} />
+              <input value={location} onChange={function (e) { setLocation(e.target.value); }} style={{ padding: 8, width: '100%' }} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, marginBottom: 4, color: '#555' }}>Latitude</label>
-              <input value={lat} onChange={(e) => setLat(e.target.value)} style={{ padding: 8, width: 100 }} />
+              <input value={lat} onChange={function (e) { setLat(e.target.value); }} style={{ padding: 8, width: 100 }} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, marginBottom: 4, color: '#555' }}>Longitude</label>
-              <input value={lon} onChange={(e) => setLon(e.target.value)} style={{ padding: 8, width: 100 }} />
+              <input value={lon} onChange={function (e) { setLon(e.target.value); }} style={{ padding: 8, width: 100 }} />
             </div>
           </div>
           <button onClick={fetchWeather} disabled={loading} style={{ padding: '8px 16px' }}>
-  {loading ? 'Loading...' : 'Fetch Weather'}
-</button>
+            {loading ? 'Loading...' : 'Fetch Weather'}
+          </button>
 
-          {weather && (
-            <div style={{ marginTop: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
-                <span className="weather-icon">{getWeatherIcon(weather.weatherCode)}</span>
-                <div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: '#1e3c72' }}>{weather.locationName}</div>
-                  <div style={{ fontSize: 28, fontWeight: 700 }}>{weather.temperature}°C</div>
-                </div>
-              </div>
-
-              <div className="stat-grid">
-                <div className="stat-box">
-                  <div className="label">Humidity</div>
-                  <div className="value">{weather.humidity}%</div>
-                </div>
-                <div className="stat-box">
-                  <div className="label">Wind Speed</div>
-                  <div className="value">{weather.windSpeed} km/h</div>
-                </div>
-                <div className="stat-box">
-                  <div className="label">Precipitation</div>
-                  <div className="value">{weather.precipitation} mm</div>
-                </div>
-                <div className="stat-box">
-                  <div className="label">Fetched</div>
-                  <div className="value" style={{ fontSize: 13 }}>{new Date(weather.fetchedAt).toLocaleTimeString()}</div>
-                </div>
-              </div>
-            </div>
-          )}
+          {weatherBlock}
         </div>
       </div>
     </div>

@@ -1,0 +1,17 @@
+$kind: http-request
+name: http://localhost:8080/api/guidelines
+description: ""
+url: http://localhost:8080/api/guidelines
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"disasterType\": \"FLOOD\",\r
+
+    \  \"riskLevel\": \"HIGH\",\r
+
+    \  \"instructions\": \"Move to higher ground immediately. Avoid walking through flowing water. Keep emergency kit ready.\"\r
+
+    }"
+order: 4400235828210618

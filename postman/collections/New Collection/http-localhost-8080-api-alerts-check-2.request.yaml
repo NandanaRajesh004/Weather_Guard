@@ -1,0 +1,11 @@
+$kind: http-request
+name: http://localhost:8080/api/alerts/check
+description: ""
+url: http://localhost:8080/api/alerts/check?location=Delhi&lat=28.6139&lon=77.2090&disasterType=HEATWAVE
+method: GET
+queryParams:
+  location: Delhi
+  lat: "28.6139"
+  lon: "77.2090"
+  disasterType: HEATWAVE
+order: 3718803737523790

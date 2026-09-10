@@ -42,4 +42,16 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    private String preferredLocation;
+private Double preferredLat;
+private Double preferredLon;
+
+public String getPreferredLocation() { return preferredLocation; }
+public void setPreferredLocation(String preferredLocation) { this.preferredLocation = preferredLocation; }
+
+public Double getPreferredLat() { return preferredLat; }
+public void setPreferredLat(Double preferredLat) { this.preferredLat = preferredLat; }
+
+public Double getPreferredLon() { return preferredLon; }
+public void setPreferredLon(Double preferredLon) { this.preferredLon = preferredLon; }
 }

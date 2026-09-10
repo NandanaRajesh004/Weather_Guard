@@ -1,0 +1,14 @@
+$kind: http-request
+name: http://localhost:8080/api/risk/analyze
+description: ""
+url: http://localhost:8080/api/risk/analyze?location=Kochi&lat=9.9312&lon=76.2673&disasterType=FLOOD
+method: GET
+queryParams:
+  location: Kochi
+  lat: "9.9312"
+  lon: "76.2673"
+  disasterType: FLOOD
+body:
+  type: json
+  content: '{"disasterType": "HEATWAVE", "riskLevel": "HIGH", "instructions": "Avoid all outdoor exposure. Drink water frequently. Seek immediate medical help for heat stroke symptoms."}'
+order: 3881632928261827

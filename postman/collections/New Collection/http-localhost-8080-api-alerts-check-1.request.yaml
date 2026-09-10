@@ -1,0 +1,11 @@
+$kind: http-request
+name: http://localhost:8080/api/alerts/check
+description: ""
+url: http://localhost:8080/api/alerts/check?location=Kochi&lat=9.9312&lon=76.2673&disasterType=FLOOD
+method: GET
+queryParams:
+  location: Kochi
+  lat: "9.9312"
+  lon: "76.2673"
+  disasterType: FLOOD
+order: 3380338624440825

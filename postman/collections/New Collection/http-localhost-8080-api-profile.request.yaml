@@ -1,0 +1,12 @@
+$kind: http-request
+name: http://localhost:8080/api/profile
+description: ""
+url: http://localhost:8080/api/profile
+method: GET
+auth:
+  type: apikey
+  credentials:
+    in: header
+    key: Authorization
+    value: Bearer
+order: 4503236056489113

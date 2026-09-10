@@ -1,0 +1,11 @@
+$kind: http-request
+name: http://localhost:8080/api/weather/history
+description: ""
+url: http://localhost:8080/api/weather/history?location=Kochi
+method: POST
+queryParams:
+  location: Kochi
+body:
+  type: json
+  content: ""
+order: 4502777999658204

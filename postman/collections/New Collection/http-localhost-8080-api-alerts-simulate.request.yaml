@@ -1,0 +1,13 @@
+$kind: http-request
+name: http://localhost:8080/api/alerts/simulate
+description: ""
+url: http://localhost:8080/api/alerts/simulate?location=Kochi&disasterType=FLOOD&riskLevel=HIGH
+method: POST
+queryParams:
+  location: Kochi
+  disasterType: FLOOD
+  riskLevel: HIGH
+body:
+  type: json
+  content: ""
+order: 4502096305688186

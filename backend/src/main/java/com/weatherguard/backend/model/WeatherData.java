@@ -64,4 +64,9 @@ public class WeatherData {
 
     public LocalDateTime getFetchedAt() { return fetchedAt; }
     public void setFetchedAt(LocalDateTime fetchedAt) { this.fetchedAt = fetchedAt; }
+
+    private Double dailyPrecipitation;
+
+public Double getDailyPrecipitation() { return dailyPrecipitation; }
+public void setDailyPrecipitation(Double dailyPrecipitation) { this.dailyPrecipitation = dailyPrecipitation; }
 }
