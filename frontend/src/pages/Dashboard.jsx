@@ -69,6 +69,33 @@ function Dashboard() {
   var loading = loadingState[0];
   var setLoading = loadingState[1];
 
+    var findingState = useState(false);
+  var findingLocation = findingState[0];
+  var setFindingLocation = findingState[1];
+
+  var findLocation = function () {
+    if (!location) {
+      alert('Please type a location name first');
+      return;
+    }
+    setFindingLocation(true);
+    axios.get('https://geocoding-api.open-meteo.com/v1/search', {
+      params: { name: location, count: 1 }
+    }).then(function (res) {
+      var results = res.data.results;
+      if (results && results.length > 0) {
+        setLat(results[0].latitude);
+        setLon(results[0].longitude);
+      } else {
+        alert('Location not found. Try a different name.');
+      }
+      setFindingLocation(false);
+    }).catch(function () {
+      alert('Failed to look up location');
+      setFindingLocation(false);
+    });
+  };
+
   var fetchWeather = function () {
     setLoading(true);
     axios.get('http://localhost:8080/api/weather/fetch', {
@@ -137,9 +164,14 @@ function Dashboard() {
         <div style={{ background: '#f4f6f9', padding: 20, borderRadius: 10 }}>
           <h3>Weather Data</h3>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
-            <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: 12, marginBottom: 4, color: '#555' }}>City / Location</label>
-              <input value={location} onChange={function (e) { setLocation(e.target.value); }} style={{ padding: 8, width: '100%' }} />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input value={location} onChange={function (e) { setLocation(e.target.value); }} style={{ padding: 8, flex: 1 }} />
+                <button onClick={findLocation} disabled={findingLocation} style={{ padding: '8px 12px' }}>
+                  {findingLocation ? 'Finding...' : 'Find'}
+                </button>
+              </div>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, marginBottom: 4, color: '#555' }}>Latitude</label>

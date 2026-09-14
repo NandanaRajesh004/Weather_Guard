@@ -13,7 +13,32 @@ function RiskAlerts() {
   const [riskLoading, setRiskLoading] = useState(false);
 const [alertLoading, setAlertLoading] = useState(false);
 
-const checkRisk = async () => {
+  const [findingLocation, setFindingLocation] = useState(false);
+
+  const findLocation = async () => {
+    if (!location) {
+      alert('Please type a location name first');
+      return;
+    }
+    setFindingLocation(true);
+    try {
+      const res = await axios.get('https://geocoding-api.open-meteo.com/v1/search', {
+        params: { name: location, count: 1 }
+      });
+      const results = res.data.results;
+      if (results && results.length > 0) {
+        setLat(results[0].latitude);
+        setLon(results[0].longitude);
+      } else {
+        alert('Location not found. Try a different name.');
+      }
+    } catch (err) {
+      alert('Failed to look up location');
+    }
+    setFindingLocation(false);
+  };
+
+  const checkRisk = async () => {
     setRiskLoading(true);
     try {
       const res = await axios.get('http://localhost:8080/api/risk/analyze', {
@@ -59,9 +84,14 @@ const checkRisk = async () => {
         <h3>Risk and Alerts</h3>
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
-          <div style={{ flex: 1 }}>
+                    <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: 12, marginBottom: 4, color: '#555' }}>City / Location</label>
-            <input value={location} onChange={(e) => setLocation(e.target.value)} style={{ padding: 8, width: '100%' }} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input value={location} onChange={(e) => setLocation(e.target.value)} style={{ padding: 8, flex: 1 }} />
+              <button onClick={findLocation} disabled={findingLocation} style={{ padding: '8px 12px' }}>
+                {findingLocation ? 'Finding...' : 'Find'}
+              </button>
+            </div>
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 12, marginBottom: 4, color: '#555' }}>Latitude</label>
