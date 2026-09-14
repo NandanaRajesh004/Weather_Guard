@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.weatherguard.backend.dto.ProfileUpdateRequest;
+import com.weatherguard.backend.dto.UserResponse;
 import com.weatherguard.backend.model.User;
 import com.weatherguard.backend.repository.UserRepository;
 import com.weatherguard.backend.security.JwtUtil;
@@ -31,13 +32,25 @@ public class ProfileController {
         return jwtUtil.extractEmail(token);
     }
 
+    private UserResponse toResponse(User user) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole());
+        response.setPreferredLocation(user.getPreferredLocation());
+        response.setPreferredLat(user.getPreferredLat());
+        response.setPreferredLon(user.getPreferredLon());
+        return response;
+    }
+
     @GetMapping
     public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String authHeader) {
         try {
             String email = getEmailFromToken(authHeader);
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(toResponse(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -58,7 +71,7 @@ public class ProfileController {
             if (request.getPreferredLon() != null) user.setPreferredLon(request.getPreferredLon());
 
             userRepository.save(user);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(toResponse(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
