@@ -17,10 +17,12 @@ function Navbar() {
         <Link to="/login" style={{ padding: '8px 16px', border: '1px solid white', color: 'white', borderRadius: 3, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>Admin Login</Link>
       </div>
       <div style={{ background: '#082a4d', padding: '8px 30px', display: 'flex' }}>
+        <Link to="/" style={linkStyle}>Home</Link>
         <Link to="/dashboard" style={linkStyle}>Weather</Link>
         <Link to="/guidelines" style={linkStyle}>Guidelines</Link>
         <Link to="/risk-alerts" style={linkStyle}>Risk &amp; Alerts</Link>
         <Link to="/trends" style={linkStyle}>Trends</Link>
+        <Link to="/contact" style={linkStyle}>Contact</Link>
       </div>
       <div className="gov-header-stripe"></div>
     </div>

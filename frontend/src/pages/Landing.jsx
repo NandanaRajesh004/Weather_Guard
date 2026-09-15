@@ -1,4 +1,36 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+
+function NavWithDropdown() {
+  var openState = useState(false);
+  var open = openState[0];
+  var setOpen = openState[1];
+
+  var itemStyle = { color: 'white', textDecoration: 'none', marginRight: 22, fontSize: 14 };
+
+  return (
+    <div style={{ background: '#082a4d', padding: '8px 30px', display: 'flex', alignItems: 'center', position: 'relative' }}>
+      <a href="#home" style={itemStyle}>Home</a>
+      <a href="#about" style={itemStyle}>About</a>
+      <div
+        onMouseEnter={function () { setOpen(true); }}
+        onMouseLeave={function () { setOpen(false); }}
+        style={{ position: 'relative', marginRight: 22 }}
+      >
+        <span style={{ color: 'white', fontSize: 14, cursor: 'pointer' }}>Features ▾</span>
+        {open && (
+          <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #d5d9dd', borderRadius: 4, minWidth: 160, boxShadow: '0 4px 10px rgba(0,0,0,0.15)', zIndex: 10 }}>
+            <Link to="/dashboard" style={{ display: 'block', padding: '10px 14px', color: '#0b3d6b', textDecoration: 'none', fontSize: 14 }}>Weather</Link>
+            <Link to="/guidelines" style={{ display: 'block', padding: '10px 14px', color: '#0b3d6b', textDecoration: 'none', fontSize: 14 }}>Guidelines</Link>
+            <Link to="/risk-alerts" style={{ display: 'block', padding: '10px 14px', color: '#0b3d6b', textDecoration: 'none', fontSize: 14 }}>Risk &amp; Alerts</Link>
+            <Link to="/trends" style={{ display: 'block', padding: '10px 14px', color: '#0b3d6b', textDecoration: 'none', fontSize: 14 }}>Trends</Link>
+          </div>
+        )}
+      </div>
+      <Link to="/contact" style={itemStyle}>Contact Us</Link>
+    </div>
+  );
+}
 
 function Landing() {
   return (
@@ -12,12 +44,7 @@ function Landing() {
           </div>
          <Link to="/login" style={{ padding: '8px 16px', background: 'white', color: '#0b3d6b', borderRadius: 3, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>Admin Login</Link>
         </div>
-        <div style={{ background: '#082a4d', padding: '8px 30px', display: 'flex' }}>
-          <a href="#home" style={{ color: 'white', textDecoration: 'none', marginRight: 22, fontSize: 14 }}>Home</a>
-          <a href="#about" style={{ color: 'white', textDecoration: 'none', marginRight: 22, fontSize: 14 }}>About</a>
-          <a href="#features" style={{ color: 'white', textDecoration: 'none', marginRight: 22, fontSize: 14 }}>Features</a>
-          <Link to="/contact" style={{ color: 'white', textDecoration: 'none', fontSize: 14 }}>Contact Us</Link>
-        </div>
+               <NavWithDropdown />
         <div className="gov-header-stripe"></div>
       </div>
 
