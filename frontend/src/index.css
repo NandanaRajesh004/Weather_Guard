@@ -4,41 +4,41 @@
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #eef1f4;
   min-height: 100vh;
-  color: #333;
+  color: #1a1a1a;
 }
 
 input, select {
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: 1px solid #a0a8b0;
+  border-radius: 3px;
   font-size: 14px;
   outline: none;
   transition: border 0.2s;
 }
 input:focus, select:focus {
-  border-color: #2a5298;
+  border-color: #0b3d6b;
 }
 
 button {
-  background: #2a5298;
+  background: #0b3d6b;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 3px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: background 0.2s;
 }
 button:hover {
-  background: #1e3c72;
-  transform: translateY(-1px);
+  background: #082a4d;
 }
 
 h2, h3, h4 {
-  color: #1e3c72;
+  color: #0b3d6b;
   margin-top: 0;
+  font-weight: 700;
 }
 
 ul {
@@ -47,25 +47,25 @@ ul {
 }
 
 li {
-  background: #f4f6f9;
+  background: #f4f6f8;
   padding: 12px 14px;
-  border-radius: 8px;
+  border-radius: 4px;
   margin-top: 8px;
-  border-left: 4px solid #2a5298;
+  border-left: 4px solid #0b3d6b;
 }
 
 .badge {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 20px;
+  border-radius: 3px;
   font-weight: 700;
   font-size: 13px;
   color: white;
 }
 
-.badge-low { background: #5cb85c; }
-.badge-medium { background: #f0ad4e; }
-.badge-high { background: #d9534f; }
+.badge-low { background: #1b7a3d; }
+.badge-medium { background: #b8860b; }
+.badge-high { background: #b03030; }
 
 .weather-icon {
   font-size: 40px;
@@ -81,18 +81,45 @@ li {
 .stat-box {
   background: white;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 4px;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  border: 1px solid #d5d9dd;
 }
 
 .stat-box .label {
   font-size: 12px;
-  color: #888;
+  color: #555;
 }
 
 .stat-box .value {
   font-size: 20px;
   font-weight: 700;
-  color: #1e3c72;
+  color: #0b3d6b;
+}
+
+.gov-header {
+  background: #0b3d6b;
+  color: white;
+  padding: 0;
+}
+
+.gov-header-top {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 14px 30px;
+}
+
+.gov-header-stripe {
+  height: 6px;
+  background: linear-gradient(to right, #ff9933 33%, white 33%, white 66%, #138808 66%);
+}
+
+.gov-footer {
+  background: #0b3d6b;
+  color: #d5d9dd;
+  padding: 20px 30px;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 40px;
 }

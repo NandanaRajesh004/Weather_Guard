@@ -37,7 +37,7 @@ function Register() {
         <button type="submit" style={{ width: '100%', padding: 10 }}>Register</button>
       </form>
       {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-      <p style={{ textAlign: 'center' }}>Already have an account? <Link to="/">Login</Link></p>
+      <p style={{ textAlign: 'center' }}>Already have an account? <Link to="/login">Login</Link></p>
     </div>
   );
 }
