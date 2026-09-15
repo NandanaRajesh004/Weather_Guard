@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function RiskAlerts() {
   const [location, setLocation] = useState('Kochi');
@@ -142,7 +143,8 @@ const [alertLoading, setAlertLoading] = useState(false);
             )}
           </div>
         )}
-      </div>
+            </div>
+      <Footer />
     </div>
   );
 }

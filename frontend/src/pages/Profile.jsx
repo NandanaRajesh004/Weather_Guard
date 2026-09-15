@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function Profile() {
   var nameState = useState('');
@@ -133,7 +134,8 @@ function Profile() {
         </button>
 
         {saved && <p style={{ color: 'green', marginTop: 10 }}>Profile updated successfully.</p>}
-      </div>
+            </div>
+      <Footer />
     </div>
   );
 }

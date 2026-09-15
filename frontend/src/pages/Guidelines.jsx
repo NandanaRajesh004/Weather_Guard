@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function Guidelines() {
   const [guidelines, setGuidelines] = useState([]);
@@ -38,10 +39,11 @@ function Guidelines() {
           <button onClick={fetchGuidelines} style={{ padding: '8px 16px' }}>Get Guidelines</button>
         </div>
 
-        <ul>
+               <ul>
           {guidelines.map(renderGuideline)}
         </ul>
       </div>
+      <Footer />
     </div>
   );
 }

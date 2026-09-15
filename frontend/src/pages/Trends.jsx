@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function Trends() {
   const [location, setLocation] = useState('Kochi');
@@ -65,7 +66,8 @@ const fetchHistory = async () => {
         )}
 
         {data.length === 0 && <p>No data loaded yet. Click "Load Trend" to fetch history.</p>}
-      </div>
+           </div>
+      <Footer />
     </div>
   );
 }

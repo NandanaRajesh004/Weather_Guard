@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function getWeatherIcon(code) {
   if (code === 0) return 'sun';
@@ -186,9 +187,10 @@ function Dashboard() {
             {loading ? 'Loading...' : 'Fetch Weather'}
           </button>
 
-          {weatherBlock}
+                    {weatherBlock}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

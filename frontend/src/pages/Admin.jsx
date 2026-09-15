@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import Footer from '../components/Footer';
 
 function Admin() {
   var usersState = useState([]);
@@ -109,7 +110,8 @@ function Admin() {
             );
           })}
         </div>
-      </div>
+    </div>
+      <Footer />
     </div>
   );
 }
