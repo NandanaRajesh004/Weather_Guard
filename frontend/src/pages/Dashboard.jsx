@@ -157,11 +157,11 @@ function Dashboard() {
     );
   }
 
-  return (
-    <div style={{ maxWidth: 700, margin: '40px auto', background: 'white', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
+   return (
+    <div>
       <Navbar />
 
-      <div style={{ padding: 30 }}>
+      <div style={{ padding: '30px 40px', maxWidth: 900, margin: '0 auto' }}>
         <div style={{ background: '#f4f6f9', padding: 20, borderRadius: 10 }}>
           <h3>Weather Data</h3>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
@@ -188,11 +188,10 @@ function Dashboard() {
           </button>
 
                     {weatherBlock}
-        </div>
+         </div>
       </div>
       <Footer />
     </div>
   );
 }
-
 export default Dashboard;

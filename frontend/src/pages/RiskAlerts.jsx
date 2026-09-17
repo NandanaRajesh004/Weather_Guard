@@ -78,10 +78,10 @@ const [alertLoading, setAlertLoading] = useState(false);
   const riskDetails = risk ? ('Temperature: ' + risk.temperature + ' C | Wind: ' + risk.windSpeed + ' km/h | Precipitation: ' + risk.precipitation + ' mm') : '';
 
   return (
-    <div style={{ maxWidth: 700, margin: '40px auto', background: 'white', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
+   <div>
       <Navbar />
 
-      <div style={{ padding: 30 }}>
+     <div style={{ padding: '30px 40px', maxWidth: 900, margin: '0 auto' }}>
         <h3>Risk and Alerts</h3>
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 function Contact() {
   var nameState = useState('');
@@ -44,17 +45,7 @@ function Contact() {
 
   return (
     <div>
-      <div className="gov-header">
-        <div className="gov-header-top">
-          <div style={{ fontSize: 26 }}>🛡️</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: 0.5 }}>WEATHERGUARD</div>
-            <div style={{ fontSize: 11, opacity: 0.85 }}>Integrated Weather Monitoring &amp; Disaster Risk Alert Platform</div>
-          </div>
-          <Link to="/" style={{ padding: '8px 16px', background: 'white', color: '#0b3d6b', borderRadius: 3, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>Home</Link>
-        </div>
-        <div className="gov-header-stripe"></div>
-      </div>
+      <Navbar />
 
       <div style={{ maxWidth: 600, margin: '50px auto', background: 'white', border: '1px solid #d5d9dd', borderRadius: 4, padding: 30 }}>
         <h2>Contact Us</h2>

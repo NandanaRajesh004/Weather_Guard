@@ -35,10 +35,10 @@ const fetchHistory = async () => {
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: '40px auto', background: 'white', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
+    <div>
       <Navbar />
 
-      <div style={{ padding: 30 }}>
+     <div style={{ padding: '30px 40px', maxWidth: 1000, margin: '0 auto' }}>
         <h3>Weather Trends</h3>
 
         <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>

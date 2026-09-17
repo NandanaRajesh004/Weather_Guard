@@ -63,7 +63,7 @@ function Admin() {
         <div className="gov-header-stripe"></div>
       </div>
 
-      <div style={{ maxWidth: 900, margin: '30px auto', padding: '0 20px' }}>
+     <div style={{ padding: '30px 40px', maxWidth: 1000, margin: '0 auto' }}>
         {error && (
           <div style={{ background: '#fdecea', border: '1px solid #b03030', color: '#b03030', padding: 15, borderRadius: 4, marginBottom: 20 }}>
             {error}

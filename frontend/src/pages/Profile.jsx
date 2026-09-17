@@ -97,10 +97,10 @@ function Profile() {
   };
 
   return (
-    <div style={{ maxWidth: 500, margin: '40px auto', background: 'white', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
+   <div>
       <Navbar />
 
-      <div style={{ padding: 30 }}>
+     <div style={{ padding: '30px 40px', maxWidth: 600, margin: '0 auto' }}>
         <h3>My Profile</h3>
 
         <div style={{ marginBottom: 12 }}>
