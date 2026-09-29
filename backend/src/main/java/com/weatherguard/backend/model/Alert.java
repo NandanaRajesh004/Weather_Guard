@@ -13,6 +13,11 @@ import jakarta.persistence.Table;
 @Table(name = "alerts")
 public class Alert {
 
+    private String source = "WEATHERGUARD"; // WEATHERGUARD or OFFICIAL
+
+public String getSource() { return source; }
+public void setSource(String source) { this.source = source; }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

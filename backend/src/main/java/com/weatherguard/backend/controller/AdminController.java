@@ -1,5 +1,21 @@
 package com.weatherguard.backend.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.weatherguard.backend.dto.UserResponse;
 import com.weatherguard.backend.model.Alert;
 import com.weatherguard.backend.model.EmergencyGuideline;
@@ -8,13 +24,6 @@ import com.weatherguard.backend.repository.AlertRepository;
 import com.weatherguard.backend.repository.EmergencyGuidelineRepository;
 import com.weatherguard.backend.repository.UserRepository;
 import com.weatherguard.backend.security.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -106,4 +115,8 @@ public class AdminController {
         guidelineRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "Guideline deleted"));
     }
+    @GetMapping("/timeline")
+public ResponseEntity<List<Alert>> getTimeline() {
+    return ResponseEntity.ok(alertRepository.findAllByOrderByCreatedAtDesc());
+}
 }
