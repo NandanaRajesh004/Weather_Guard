@@ -13,6 +13,15 @@ import jakarta.persistence.Table;
 @Table(name = "risk_data")
 public class RiskData {
 
+    private Integer riskScore;
+private String explanation;
+
+public Integer getRiskScore() { return riskScore; }
+public void setRiskScore(Integer riskScore) { this.riskScore = riskScore; }
+
+public String getExplanation() { return explanation; }
+public void setExplanation(String explanation) { this.explanation = explanation; }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

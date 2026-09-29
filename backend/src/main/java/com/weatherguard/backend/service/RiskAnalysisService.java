@@ -1,6 +1,8 @@
 package com.weatherguard.backend.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,31 +18,54 @@ public class RiskAnalysisService {
     private RiskDataRepository riskDataRepository;
 
     public RiskData calculateRisk(WeatherData weather, String disasterType) {
-        String riskLevel = "LOW";
+        int score = 0;
+        List<String> reasons = new ArrayList<>();
+
+        double precip = weather.getPrecipitation() == null ? 0 : weather.getPrecipitation();
+        double dailyPrecip = weather.getDailyPrecipitation() == null ? 0 : weather.getDailyPrecipitation();
+        double wind = weather.getWindSpeed() == null ? 0 : weather.getWindSpeed();
+        double temp = weather.getTemperature() == null ? 0 : weather.getTemperature();
+        double humidity = weather.getHumidity() == null ? 0 : weather.getHumidity();
 
         if (disasterType.equalsIgnoreCase("FLOOD")) {
-            double precip = weather.getPrecipitation() == null ? 0 : weather.getPrecipitation();
-            if (precip > 50) riskLevel = "HIGH";
-            else if (precip > 15) riskLevel = "MEDIUM";
-            else riskLevel = "LOW";
+                      if (precip > 5) { score += 30; reasons.add("Active heavy rain right now (" + precip + "mm/hr)"); }
+            else if (precip > 0.5) { score += 15; reasons.add("Light rain currently falling"); }
+
+            if (humidity > 90) { score += 10; reasons.add("Very high humidity (" + humidity + "%)"); }
 
         } else if (disasterType.equalsIgnoreCase("CYCLONE")) {
-            double wind = weather.getWindSpeed() == null ? 0 : weather.getWindSpeed();
-            if (wind > 90) riskLevel = "HIGH";
-            else if (wind > 50) riskLevel = "MEDIUM";
-            else riskLevel = "LOW";
+            if (wind > 90) { score += 60; reasons.add("Destructive wind speed (" + wind + " km/h)"); }
+            else if (wind > 60) { score += 40; reasons.add("Very strong winds (" + wind + " km/h)"); }
+            else if (wind > 40) { score += 20; reasons.add("Strong winds (" + wind + " km/h)"); }
+
+            if (dailyPrecip > 30) { score += 25; reasons.add("Heavy rain accompanying wind (" + dailyPrecip + "mm today)"); }
+            if (precip > 2) { score += 15; reasons.add("Active rain with wind"); }
 
         } else if (disasterType.equalsIgnoreCase("HEATWAVE")) {
-            double temp = weather.getTemperature() == null ? 0 : weather.getTemperature();
-            if (temp > 42) riskLevel = "HIGH";
-            else if (temp > 37) riskLevel = "MEDIUM";
-            else riskLevel = "LOW";
+            if (temp > 42) { score += 55; reasons.add("Extreme temperature (" + temp + "C)"); }
+            else if (temp > 38) { score += 35; reasons.add("Very high temperature (" + temp + "C)"); }
+            else if (temp > 34) { score += 15; reasons.add("Elevated temperature (" + temp + "C)"); }
+
+            if (humidity < 30 && temp > 34) { score += 20; reasons.add("Low humidity intensifying heat stress"); }
+            else if (humidity > 70 && temp > 34) { score += 15; reasons.add("High humidity increasing heat index"); }
         }
+
+        if (score > 100) score = 100;
+
+        String riskLevel;
+        if (score >= 61) riskLevel = "SEVERE";
+        else if (score >= 41) riskLevel = "HIGH";
+        else if (score >= 21) riskLevel = "MODERATE";
+        else riskLevel = "LOW";
+
+        String explanation = reasons.isEmpty() ? "No significant risk factors detected." : String.join("; ", reasons);
 
         RiskData riskData = new RiskData();
         riskData.setLocationName(weather.getLocationName());
         riskData.setDisasterType(disasterType.toUpperCase());
         riskData.setRiskLevel(riskLevel);
+        riskData.setRiskScore(score);
+        riskData.setExplanation(explanation);
         riskData.setTemperature(weather.getTemperature());
         riskData.setWindSpeed(weather.getWindSpeed());
         riskData.setPrecipitation(weather.getPrecipitation());

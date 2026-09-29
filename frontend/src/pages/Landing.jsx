@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import KeralaDistricts from '../components/KeralaDistricts';
 
 function NavWithDropdown() {
   var openState = useState(false);
@@ -55,7 +56,7 @@ function Landing() {
         </p>
             <Link to="/dashboard" style={{ padding: '12px 28px', background: '#ff9933', color: '#0b3d6b', borderRadius: 3, textDecoration: 'none', fontWeight: 700 }}>Check Weather Now</Link>
       </div>
-
+              <KeralaDistricts />
       <div id="about" style={{ padding: '50px 30px', maxWidth: 800, margin: '0 auto' }}>
         <h2>About WeatherGuard</h2>
         <p style={{ lineHeight: 1.7, color: '#333' }}>
