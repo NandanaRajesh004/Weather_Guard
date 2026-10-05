@@ -17,6 +17,15 @@ public class RiskAnalysisService {
     @Autowired
     private RiskDataRepository riskDataRepository;
 
+    public String getTrend(String locationName, String disasterType, int currentScore) {
+    List<RiskData> recent = riskDataRepository.findTop2ByLocationNameAndDisasterTypeOrderByCalculatedAtDesc(locationName, disasterType);
+    if (recent.size() < 2) return "STABLE";
+    int previousScore = recent.get(1).getRiskScore() == null ? 0 : recent.get(1).getRiskScore();
+    if (currentScore > previousScore + 5) return "INCREASING";
+    if (currentScore < previousScore - 5) return "DECREASING";
+    return "STABLE";
+}
+
     public RiskData calculateRisk(WeatherData weather, String disasterType) {
         int score = 0;
         List<String> reasons = new ArrayList<>();
@@ -28,8 +37,11 @@ public class RiskAnalysisService {
         double humidity = weather.getHumidity() == null ? 0 : weather.getHumidity();
 
         if (disasterType.equalsIgnoreCase("FLOOD")) {
-                      if (precip > 5) { score += 30; reasons.add("Active heavy rain right now (" + precip + "mm/hr)"); }
-            else if (precip > 0.5) { score += 15; reasons.add("Light rain currently falling"); }
+            if (dailyPrecip > 50) { score += 50; reasons.add("Very heavy forecast rainfall (" + dailyPrecip + "mm today)"); }
+            else if (dailyPrecip > 20) { score += 30; reasons.add("Heavy forecast rainfall (" + dailyPrecip + "mm today)"); }
+            else if (dailyPrecip > 5) { score += 15; reasons.add("Moderate forecast rainfall (" + dailyPrecip + "mm today)"); }
+
+            if (precip > 5) { score += 30; reasons.add("Active heavy rain right now (" + precip + "mm/hr)"); }
 
             if (humidity > 90) { score += 10; reasons.add("Very high humidity (" + humidity + "%)"); }
 
@@ -70,6 +82,9 @@ public class RiskAnalysisService {
         riskData.setWindSpeed(weather.getWindSpeed());
         riskData.setPrecipitation(weather.getPrecipitation());
         riskData.setCalculatedAt(LocalDateTime.now());
+
+        String trend = getTrend(weather.getLocationName(), disasterType, score);
+riskData.setExplanation(explanation + " (Trend: " + trend + ")");
 
         return riskDataRepository.save(riskData);
     }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -10,6 +10,20 @@ function RiskAlerts() {
   const [disasterType, setDisasterType] = useState('FLOOD');
   const [risk, setRisk] = useState(null);
   const [alertResult, setAlertResult] = useState(null);
+  const [timeline, setTimeline] = useState([]);
+
+const loadTimeline = async () => {
+  try {
+    const res = await axios.get('http://localhost:8080/api/alerts/timeline');
+    setTimeline(res.data);
+  } catch (err) {
+    // silent fail is fine here
+  }
+};
+
+useEffect(function () {
+  loadTimeline();
+}, []);
 
   const [riskLoading, setRiskLoading] = useState(false);
 const [alertLoading, setAlertLoading] = useState(false);
@@ -142,8 +156,25 @@ const [alertLoading, setAlertLoading] = useState(false);
               <p>{alertResult.message}</p>
             )}
           </div>
-        )}
-            </div>
+               )}
+
+        <div style={{ marginTop: 30 }}>
+          <h3>Alert Timeline</h3>
+          {timeline.length === 0 && <p style={{ color: '#777' }}>No alerts recorded yet.</p>}
+          {timeline.map(function (a) {
+            return (
+              <div key={a.id} style={{ borderLeft: '4px solid #0b3d6b', background: '#f4f6f9', padding: 10, marginTop: 8 }}>
+                <strong>{a.locationName}</strong> — {a.disasterType} ({a.riskLevel})
+                <span style={{ float: 'right', fontSize: 12, color: '#777' }}>
+                  {a.source === 'OFFICIAL' ? '🏛 Official' : '🤖 WeatherGuard'}
+                </span>
+                <div style={{ fontSize: 13, color: '#555', marginTop: 4 }}>{a.message}</div>
+                <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>{new Date(a.createdAt).toLocaleString()}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
       <Footer />
     </div>
   );
