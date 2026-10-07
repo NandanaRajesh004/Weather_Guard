@@ -29,6 +29,24 @@ import com.weatherguard.backend.security.JwtUtil;
 @RequestMapping("/api/admin")
 public class AdminController {
 
+    @PutMapping("/users/{id}/role")
+public ResponseEntity<?> updateUserRole(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody Map<String, String> body) {
+    if (!isAdmin(authHeader)) {
+        return ResponseEntity.status(403).body(Map.of("error", "Admin access required"));
+    }
+    String newRole = body.get("role");
+    if (!OPERATIONAL_ROLES.contains(newRole.toUpperCase()) && !"USER".equalsIgnoreCase(newRole)) {
+        return ResponseEntity.badRequest().body(Map.of("error", "Invalid role"));
+    }
+    User user = userRepository.findById(id).orElse(null);
+    if (user == null) {
+        return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
+    }
+    user.setRole(newRole.toUpperCase());
+    userRepository.save(user);
+    return ResponseEntity.ok(Map.of("message", "Role updated", "role", user.getRole()));
+}
+
     @Autowired
     private UserRepository userRepository;
 
@@ -41,12 +59,16 @@ public class AdminController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    private boolean isAdmin(String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        String email = jwtUtil.extractEmail(token);
-        User user = userRepository.findByEmail(email).orElse(null);
-        return user != null && "ADMIN".equalsIgnoreCase(user.getRole());
-    }
+    private static final java.util.Set<String> OPERATIONAL_ROLES = java.util.Set.of(
+    "ADMIN", "DMA", "RELIEF_SQUAD", "CONTROL_ROOM", "MILITARY"
+);
+
+private boolean isAdmin(String authHeader) {
+    String token = authHeader.replace("Bearer ", "");
+    String email = jwtUtil.extractEmail(token);
+    User user = userRepository.findByEmail(email).orElse(null);
+    return user != null && OPERATIONAL_ROLES.contains(user.getRole().toUpperCase());
+}
 
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(@RequestHeader("Authorization") String authHeader) {

@@ -15,7 +15,7 @@ function Register() {
     try {
       const res = await axios.post('http://localhost:8080/api/auth/register', { name, email, password });
       localStorage.setItem('token', res.data.token);
-      navigate('/dashboard');
+     navigate('/register-success');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed');
     }

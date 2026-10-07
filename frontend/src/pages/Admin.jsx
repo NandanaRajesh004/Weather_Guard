@@ -79,6 +79,7 @@ function Admin() {
                 <th style={{ padding: 8 }}>Email</th>
                 <th style={{ padding: 8 }}>Role</th>
                 <th style={{ padding: 8 }}>Preferred Location</th>
+                <th style={{ padding: 8 }}>Change Role</th>
               </tr>
             </thead>
             <tbody>
@@ -89,6 +90,24 @@ function Admin() {
                     <td style={{ padding: 8 }}>{u.email}</td>
                     <td style={{ padding: 8 }}>{u.role}</td>
                     <td style={{ padding: 8 }}>{u.preferredLocation || '-'}</td>
+                    <td style={{ padding: 8 }}>
+                      <select
+                        defaultValue={u.role}
+                        onChange={function (e) {
+                          axios.put('http://localhost:8080/api/admin/users/' + u.id + '/role',
+                            { role: e.target.value },
+                            { headers: getAuthHeader() }
+                          ).then(function () { loadData(); });
+                        }}
+                      >
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="DMA">DMA</option>
+                        <option value="RELIEF_SQUAD">RELIEF_SQUAD</option>
+                        <option value="CONTROL_ROOM">CONTROL_ROOM</option>
+                        <option value="MILITARY">MILITARY</option>
+                      </select>
+                    </td>
                   </tr>
                 );
               })}

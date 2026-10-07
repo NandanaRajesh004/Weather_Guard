@@ -9,6 +9,7 @@ import Trends from './pages/Trends';
 import Profile from './pages/Profile';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
+import RegisterSuccess from './pages/RegisterSuccess';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/register-success" element={<RegisterSuccess />} />
       </Routes>
     </BrowserRouter>
   );
