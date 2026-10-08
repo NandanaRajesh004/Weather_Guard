@@ -21,7 +21,7 @@ var KERALA_DISTRICTS = [
   { name: 'Kasaragod', lat: 12.4996, lon: 74.9869 }
 ];
 
-var HAZARDS = ['FLOOD', 'CYCLONE', 'HEATWAVE'];
+var HAZARDS = ['FLOOD', 'CYCLONE', 'HEATWAVE', 'LIGHTNING'];
 
 function riskColor(level) {
   switch (level) {
@@ -77,9 +77,9 @@ function KeralaDistricts() {
   var hazardLabel = function (h) {
     if (h === 'FLOOD') return 'Flood';
     if (h === 'CYCLONE') return 'Cyclone / Wind';
-    return 'Heatwave';
+    if (h === 'HEATWAVE') return 'Heatwave';
+    return 'Lightning';
   };
-
   return (
     <div style={{ padding: '50px 30px', background: '#eef1f4' }}>
       <h2 style={{ textAlign: 'center' }}>Kerala District Risk Map</h2>

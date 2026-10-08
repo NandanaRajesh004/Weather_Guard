@@ -70,6 +70,15 @@ public class RiskAnalysisService {
             if (humidity < 30 && temp > 34) { score += 20; reasons.add("Low humidity intensifying heat stress"); }
             else if (humidity > 70 && temp > 34) { score += 15; reasons.add("High humidity increasing heat index"); }
         }
+        } else if (disasterType.equalsIgnoreCase("LIGHTNING")) {
+            Integer code = weather.getWeatherCode();
+            int wc = code == null ? 0 : code;
+            if (wc == 96 || wc == 99) { score += 70; reasons.add("Thunderstorm with hail detected (code " + wc + ")"); }
+            else if (wc == 95) { score += 50; reasons.add("Active thunderstorm detected"); }
+
+            if (humidity > 80 && dailyPrecip > 10) { score += 20; reasons.add("High humidity and rainfall favor storm development"); }
+            if (wind > 30 && wc >= 80) { score += 10; reasons.add("Gusty conditions with showers"); }
+        }
 
         if (score > 100) score = 100;
 
