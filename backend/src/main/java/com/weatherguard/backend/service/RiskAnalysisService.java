@@ -69,7 +69,6 @@ public class RiskAnalysisService {
 
             if (humidity < 30 && temp > 34) { score += 20; reasons.add("Low humidity intensifying heat stress"); }
             else if (humidity > 70 && temp > 34) { score += 15; reasons.add("High humidity increasing heat index"); }
-        }
         } else if (disasterType.equalsIgnoreCase("LIGHTNING")) {
             Integer code = weather.getWeatherCode();
             int wc = code == null ? 0 : code;

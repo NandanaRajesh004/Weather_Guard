@@ -43,7 +43,8 @@ function Landing() {
             <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: 0.5 }}>WEATHERGUARD</div>
             <div style={{ fontSize: 11, opacity: 0.85 }}>Integrated Weather Monitoring &amp; Disaster Risk Alert Platform</div>
           </div>
-         <Link to="/login" style={{ padding: '8px 16px', background: 'white', color: '#0b3d6b', borderRadius: 3, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>Admin Login</Link>
+<Link to="/register" style={{ padding: '8px 16px', border: '1px solid white', color: 'white', borderRadius: 3, textDecoration: 'none', fontWeight: 600, fontSize: 14, marginRight: 10 }}>Register</Link>
+<Link to="/login" style={{ padding: '8px 16px', background: 'white', color: '#0b3d6b', borderRadius: 3, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>Admin Login</Link>
         </div>
                <NavWithDropdown />
         <div className="gov-header-stripe"></div>
