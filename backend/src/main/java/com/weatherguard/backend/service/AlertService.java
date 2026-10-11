@@ -1,16 +1,16 @@
 package com.weatherguard.backend.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.weatherguard.backend.model.Alert;
 import com.weatherguard.backend.model.EmergencyGuideline;
 import com.weatherguard.backend.model.RiskData;
 import com.weatherguard.backend.repository.AlertRepository;
 import com.weatherguard.backend.repository.EmergencyGuidelineRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AlertService {
@@ -26,9 +26,16 @@ public class AlertService {
             return null;
         }
 
+        Optional<Alert> existing = alertRepository
+                .findFirstByLocationNameAndDisasterTypeAndRiskLevelAndCreatedAtAfterOrderByCreatedAtDesc(
+                        risk.getLocationName(), risk.getDisasterType(), risk.getRiskLevel(),
+                        LocalDateTime.now().minusMinutes(60));
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+
         List<EmergencyGuideline> guidelines = guidelineRepository.findByDisasterTypeAndRiskLevel(
-                risk.getDisasterType(), risk.getRiskLevel()
-        );
+                risk.getDisasterType(), risk.getRiskLevel());
 
         String message;
         if (!guidelines.isEmpty()) {

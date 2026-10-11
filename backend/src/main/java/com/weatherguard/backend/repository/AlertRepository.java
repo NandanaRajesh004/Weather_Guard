@@ -1,11 +1,15 @@
 package com.weatherguard.backend.repository;
 
-import java.util.List;
-
+import com.weatherguard.backend.model.Alert;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.weatherguard.backend.model.Alert;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 public interface AlertRepository extends JpaRepository<Alert, Long> {
     List<Alert> findAllByOrderByCreatedAtDesc();
+
+    Optional<Alert> findFirstByLocationNameAndDisasterTypeAndRiskLevelAndCreatedAtAfterOrderByCreatedAtDesc(
+            String locationName, String disasterType, String riskLevel, LocalDateTime since);
 }
