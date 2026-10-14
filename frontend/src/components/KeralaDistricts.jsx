@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 
 var GEO_URL = 'https://raw.githubusercontent.com/geohacker/kerala/master/geojsons/district.geojson';
@@ -23,17 +24,32 @@ var KERALA_DISTRICTS = [
 
 var HAZARDS = ['FLOOD', 'CYCLONE', 'HEATWAVE', 'LIGHTNING'];
 
+function hazardLabel(h) {
+  if (h === 'FLOOD') return 'Flood';
+  if (h === 'CYCLONE') return 'Cyclone / Wind';
+  if (h === 'HEATWAVE') return 'Heatwave';
+  return 'Lightning';
+}
+
 function riskColor(level) {
   switch (level) {
-    case "SEVERE": return "#7f1d1d";
-    case "HIGH": return "#ef4444";
-    case "MODERATE": return "#f59e0b";
-    case "LOW": return "#22c55e";
-    default: return "#d1d5db";
+    case 'SEVERE': return '#7f1d1d';
+    case 'HIGH': return '#ef4444';
+    case 'MODERATE': return '#f59e0b';
+    case 'LOW': return '#22c55e';
+    default: return '#d1d5db';
   }
 }
 
-function KeralaDistricts() {
+function KeralaDistricts(props) {
+  // When a hazard is passed in (map pages), the parent controls it.
+  // Without one (landing page), the component shows its own toggle buttons.
+  var hazardState = useState('FLOOD');
+  var localHazard = hazardState[0];
+  var setLocalHazard = hazardState[1];
+  var hazard = props.hazard || localHazard;
+  var showToggle = !props.hazard;
+
   var resultsState = useState({});
   var results = resultsState[0];
   var setResults = resultsState[1];
@@ -46,12 +62,15 @@ function KeralaDistricts() {
   var selected = selectedState[0];
   var setSelected = selectedState[1];
 
-  var hazardState = useState('FLOOD');
-  var hazard = hazardState[0];
-  var setHazard = hazardState[1];
+  var tooltipState = useState(null);
+  var tooltip = tooltipState[0];
+  var setTooltip = tooltipState[1];
 
   useEffect(function () {
+    var cancelled = false;
     setLoading(true);
+    setSelected(null);
+
     var requests = KERALA_DISTRICTS.map(function (d) {
       return axios.get('http://localhost:8080/api/risk/analyze', {
         params: { location: d.name, lat: d.lat, lon: d.lon, disasterType: hazard }
@@ -59,57 +78,69 @@ function KeralaDistricts() {
     });
 
     Promise.all(requests).then(function (combined) {
+      if (cancelled) return;
       var map = {};
       for (var i = 0; i < KERALA_DISTRICTS.length; i++) {
         map[KERALA_DISTRICTS[i].name] = combined[i];
       }
       setResults(map);
       setLoading(false);
-      setSelected(null);
     });
+
+    return function () { cancelled = true; };
   }, [hazard]);
 
-  var handleClick = function (districtName) {
-    var r = results[districtName];
-    if (r) setSelected(r);
+  var anyData = KERALA_DISTRICTS.some(function (d) { return results[d.name]; });
+
+  var showTooltip = function (evt, districtName) {
+    setTooltip({ x: evt.clientX, y: evt.clientY, name: districtName, data: results[districtName] });
   };
 
-  var hazardLabel = function (h) {
-    if (h === 'FLOOD') return 'Flood';
-    if (h === 'CYCLONE') return 'Cyclone / Wind';
-    if (h === 'HEATWAVE') return 'Heatwave';
-    return 'Lightning';
+  var legendItem = function (color, label) {
+    return (
+      <span>
+        <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: color, marginRight: 5 }}></span>
+        {label}
+      </span>
+    );
   };
+
   return (
-    <div style={{ padding: '50px 30px', background: '#eef1f4' }}>
-      <h2 style={{ textAlign: 'center' }}>Kerala District Risk Map</h2>
+    <div style={{ padding: '30px 30px 50px', background: '#eef1f4' }}>
+      <h2 style={{ textAlign: 'center' }}>{hazardLabel(hazard)} Risk Map - Kerala</h2>
       <p style={{ textAlign: 'center', color: '#555', maxWidth: 600, margin: '0 auto 20px' }}>
-        Select a hazard to see district-wise risk. Click a district for details.
+        Hover over a district to see its risk level. Click it for the full explanation.
       </p>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
-        {HAZARDS.map(function (h) {
-          var isActive = hazard === h;
-          return (
-            <button
-              key={h}
-              onClick={function () { setHazard(h); }}
-              style={{
-                padding: '8px 16px',
-                background: isActive ? '#0b3d6b' : 'white',
-                color: isActive ? 'white' : '#0b3d6b',
-                border: '1px solid #0b3d6b'
-              }}
-            >
-              {hazardLabel(h)}
-            </button>
-          );
-        })}
-      </div>
+      {showToggle && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+          {HAZARDS.map(function (h) {
+            var isActive = hazard === h;
+            return (
+              <button
+                key={h}
+                onClick={function () { setLocalHazard(h); }}
+                style={{
+                  padding: '8px 16px',
+                  background: isActive ? '#0b3d6b' : 'white',
+                  color: isActive ? 'white' : '#0b3d6b',
+                  border: '1px solid #0b3d6b'
+                }}
+              >
+                {hazardLabel(h)}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {loading && <p style={{ textAlign: 'center' }}>Calculating district risk levels...</p>}
 
-      {!loading && (
+      {!loading && !anyData && (
+        <p style={{ textAlign: 'center', color: '#b03030' }}>Could not load risk data. Is the backend running?</p>
+      )}
+
+      {!loading && anyData && (
         <div style={{ maxWidth: 500, margin: '0 auto' }}>
           <ComposableMap
             projection="geoMercator"
@@ -130,10 +161,13 @@ function KeralaDistricts() {
                       fill={fill}
                       stroke="#ffffff"
                       strokeWidth={0.5}
-                      onClick={function () { handleClick(districtName); }}
+                      onMouseEnter={function (evt) { showTooltip(evt, districtName); }}
+                      onMouseMove={function (evt) { showTooltip(evt, districtName); }}
+                      onMouseLeave={function () { setTooltip(null); }}
+                      onClick={function () { if (r) setSelected(r); }}
                       style={{
                         default: { outline: 'none', cursor: 'pointer' },
-                        hover: { outline: 'none', cursor: 'pointer', stroke: '#0b3d6b', strokeWidth: 1.2 },
+                        hover: { outline: 'none', cursor: 'pointer', stroke: '#0b3d6b', strokeWidth: 1.5 },
                         pressed: { outline: 'none' }
                       }}
                     />
@@ -145,20 +179,52 @@ function KeralaDistricts() {
         </div>
       )}
 
-      {selected && (
-        <div style={{ maxWidth: 350, margin: '20px auto 0', background: 'white', border: '1px solid #d5d9dd', borderRadius: 4, padding: 16 }}>
-          <strong>{selected.locationName}</strong><br />
-          {selected.disasterType} risk: <span style={{ color: riskColor(selected.riskLevel), fontWeight: 700 }}>{selected.riskLevel}</span> ({selected.riskScore}/100)<br />
-          {selected.explanation && <div style={{ marginTop: 8, fontSize: 13, color: '#555' }}>{selected.explanation}</div>}
-          <div style={{ marginTop: 8 }}>Temp: {selected.temperature} C, Wind: {selected.windSpeed} km/h, Rain: {selected.precipitation} mm</div>
+      {tooltip && (
+        <div
+          style={{
+            position: 'fixed',
+            left: tooltip.x + 14,
+            top: tooltip.y + 14,
+            background: 'white',
+            border: '1px solid #d5d9dd',
+            borderRadius: 4,
+            padding: '8px 12px',
+            fontSize: 13,
+            boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+            pointerEvents: 'none',
+            zIndex: 50
+          }}
+        >
+          <strong>{tooltip.name}</strong>
+          <br />
+          {tooltip.data ? tooltip.data.riskLevel + ' (' + tooltip.data.riskScore + '/100)' : 'No data'}
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 15, fontSize: 13 }}>
-        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#22c55e', marginRight: 5 }}></span>Low</span>
-        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#f59e0b', marginRight: 5 }}></span>Moderate</span>
-        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#ef4444', marginRight: 5 }}></span>High</span>
-        <span><span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#7f1d1d', marginRight: 5 }}></span>Severe</span>
+      {selected && (
+        <div style={{ maxWidth: 420, margin: '20px auto 0', background: 'white', border: '1px solid #d5d9dd', borderRadius: 4, padding: 16 }}>
+          <strong>{selected.locationName}</strong>
+          <br />
+          <span style={{ color: riskColor(selected.riskLevel), fontWeight: 700 }}>{selected.riskLevel}</span>
+          {' '}({selected.riskScore}/100)
+          {selected.explanation && (
+            <div style={{ marginTop: 8, fontSize: 13, color: '#555' }}>{selected.explanation}</div>
+          )}
+          <div style={{ marginTop: 8, fontSize: 13 }}>
+            Temp: {selected.temperature} C, Wind: {selected.windSpeed} km/h, Rain now: {selected.precipitation} mm
+          </div>
+          <div style={{ marginTop: 10, fontSize: 13 }}>
+            <Link to="/guidelines" style={{ color: '#0b3d6b', fontWeight: 600 }}>See safety guidance</Link>
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 15, fontSize: 13, flexWrap: 'wrap' }}>
+        {legendItem('#22c55e', 'Low')}
+        {legendItem('#f59e0b', 'Moderate')}
+        {legendItem('#ef4444', 'High')}
+        {legendItem('#7f1d1d', 'Severe')}
+        {legendItem('#c7ccd1', 'No data')}
       </div>
     </div>
   );

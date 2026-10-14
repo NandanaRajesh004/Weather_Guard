@@ -1,99 +1,141 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import KeralaDistricts from '../components/KeralaDistricts';
+import axios from 'axios';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import KeralaTrends from '../components/KeralaTrends';
 
-function NavWithDropdown() {
-  var openState = useState(false);
-  var open = openState[0];
-  var setOpen = openState[1];
+var HAZARDS = [
+  { to: '/map/flood', title: 'Flood', text: 'District-wise flood risk from forecast and current rainfall.' },
+  { to: '/map/lightning', title: 'Lightning', text: 'Thunderstorm and lightning risk across Kerala.' },
+  { to: '/map/cyclone', title: 'Cyclone / Wind', text: 'Strong wind and cyclone-related conditions.' },
+  { to: '/map/heatwave', title: 'Heatwave', text: 'Heat stress from temperature and humidity.' }
+];
 
-  var itemStyle = { color: 'white', textDecoration: 'none', marginRight: 22, fontSize: 14 };
-
-  return (
-    <div style={{ background: '#082a4d', padding: '8px 30px', display: 'flex', alignItems: 'center', position: 'relative' }}>
-      <a href="#home" style={itemStyle}>Home</a>
-      <a href="#about" style={itemStyle}>About</a>
-      <div
-        onMouseEnter={function () { setOpen(true); }}
-        onMouseLeave={function () { setOpen(false); }}
-        style={{ position: 'relative', marginRight: 22 }}
-      >
-        <span style={{ color: 'white', fontSize: 14, cursor: 'pointer' }}>Features ▾</span>
-        {open && (
-          <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', border: '1px solid #d5d9dd', borderRadius: 4, minWidth: 160, boxShadow: '0 4px 10px rgba(0,0,0,0.15)', zIndex: 10 }}>
-            <Link to="/dashboard" style={{ display: 'block', padding: '10px 14px', color: '#0b3d6b', textDecoration: 'none', fontSize: 14 }}>Weather</Link>
-            <Link to="/guidelines" style={{ display: 'block', padding: '10px 14px', color: '#0b3d6b', textDecoration: 'none', fontSize: 14 }}>Guidelines</Link>
-            <Link to="/risk-alerts" style={{ display: 'block', padding: '10px 14px', color: '#0b3d6b', textDecoration: 'none', fontSize: 14 }}>Risk &amp; Alerts</Link>
-            <Link to="/trends" style={{ display: 'block', padding: '10px 14px', color: '#0b3d6b', textDecoration: 'none', fontSize: 14 }}>Trends</Link>
-          </div>
-        )}
-      </div>
-      <Link to="/contact" style={itemStyle}>Contact Us</Link>
-    </div>
-  );
+function levelColor(level) {
+  if (level === 'SEVERE') return '#7f1d1d';
+  if (level === 'HIGH') return '#ef4444';
+  if (level === 'MODERATE') return '#f59e0b';
+  if (level === 'LOW') return '#22c55e';
+  return '#9ca3af';
 }
 
 function Landing() {
+  var alertsState = useState([]);
+  var alerts = alertsState[0];
+  var setAlerts = alertsState[1];
+
+  var loadedState = useState(false);
+  var loaded = loadedState[0];
+  var setLoaded = loadedState[1];
+
+  useEffect(function () {
+    axios.get('http://localhost:8080/api/alerts/timeline')
+      .then(function (res) {
+        setAlerts(res.data);
+        setLoaded(true);
+      })
+      .catch(function () {
+        setLoaded(true);
+      });
+  }, []);
+
+  var cutoff = Date.now() - 48 * 60 * 60 * 1000;
+  var recent = alerts
+    .filter(function (a) { return new Date(a.createdAt).getTime() >= cutoff; })
+    .slice(0, 6);
+
+  var heroButton = {
+    display: 'inline-block',
+    padding: '12px 24px',
+    margin: '0 6px 8px',
+    borderRadius: 3,
+    textDecoration: 'none',
+    fontWeight: 700
+  };
+
   return (
     <div>
-      <div className="gov-header">
-        <div className="gov-header-top">
-          <div style={{ fontSize: 26 }}>🛡️</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: 0.5 }}>WEATHERGUARD</div>
-            <div style={{ fontSize: 11, opacity: 0.85 }}>Integrated Weather Monitoring &amp; Disaster Risk Alert Platform</div>
-          </div>
-<Link to="/register" style={{ padding: '8px 16px', border: '1px solid white', color: 'white', borderRadius: 3, textDecoration: 'none', fontWeight: 600, fontSize: 14, marginRight: 10 }}>Register</Link>
-<Link to="/login" style={{ padding: '8px 16px', background: 'white', color: '#0b3d6b', borderRadius: 3, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>Admin Login</Link>
-        </div>
-               <NavWithDropdown />
-        <div className="gov-header-stripe"></div>
+      <Navbar />
+
+      <div style={{ background: '#0b3d6b', color: 'white', padding: '50px 30px', textAlign: 'center' }}>
+        <h1 style={{ color: 'white', fontSize: 32, margin: '0 0 10px' }}>Kerala Weather and Disaster Risk Monitor</h1>
+        <p style={{ fontSize: 16, maxWidth: 650, margin: '0 auto 24px', opacity: 0.9 }}>
+          Live district-level risk for floods, lightning, cyclone winds and heatwaves, with clear guidance on what to do.
+        </p>
+        <Link to="/risk-alerts" style={{ ...heroButton, background: '#ff9933', color: '#0b3d6b' }}>Check risk for your location</Link>
+        <Link to="/guidelines" style={{ ...heroButton, border: '1px solid white', color: 'white' }}>Safety guidelines</Link>
       </div>
 
-      <div id="home" style={{ background: '#0b3d6b', color: 'white', padding: '60px 30px', textAlign: 'center' }}>
-        <h1 style={{ color: 'white', fontSize: 32, marginBottom: 10 }}>Stay Ahead of the Weather</h1>
-        <p style={{ fontSize: 16, maxWidth: 600, margin: '0 auto 25px', opacity: 0.9 }}>
-          Real-time weather monitoring, automated risk assessment, and emergency guidance in one unified platform.
-        </p>
-            <Link to="/dashboard" style={{ padding: '12px 28px', background: '#ff9933', color: '#0b3d6b', borderRadius: 3, textDecoration: 'none', fontWeight: 700 }}>Check Weather Now</Link>
+      <div style={{ padding: '40px 30px', maxWidth: 1000, margin: '0 auto' }}>
+        <h2 style={{ textAlign: 'center' }}>Hazard Maps</h2>
+        <p style={{ textAlign: 'center', color: '#555', marginBottom: 24 }}>Select a hazard to open its district risk map.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 16 }}>
+          {HAZARDS.map(function (h) {
+            return (
+              <Link
+                key={h.to}
+                to={h.to}
+                style={{ display: 'block', textDecoration: 'none', color: 'inherit', background: 'white', border: '1px solid #d5d9dd', borderTop: '4px solid #0b3d6b', borderRadius: 4, padding: 18 }}
+              >
+                <h4 style={{ margin: '0 0 6px' }}>{h.title}</h4>
+                <p style={{ fontSize: 14, color: '#555', margin: '0 0 10px' }}>{h.text}</p>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#0b3d6b' }}>Open map</span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
-              <KeralaDistricts />
-      <div id="about" style={{ padding: '50px 30px', maxWidth: 800, margin: '0 auto' }}>
+
+      <div style={{ background: 'white', padding: '40px 30px' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <h2>Latest Alerts</h2>
+          <p style={{ color: '#555' }}>
+            Alerts raised in the last 48 hours. These come from WeatherGuard's own analysis of weather data and are not official government warnings. For official warnings, follow KSDMA and IMD.
+          </p>
+
+          {!loaded && <p>Loading alerts...</p>}
+
+          {loaded && recent.length === 0 && (
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: 14, borderRadius: 4 }}>
+              No alerts in the last 48 hours. Use Check Risk to assess a specific location.
+            </div>
+          )}
+
+          {recent.map(function (a) {
+            return (
+              <div key={a.id} style={{ borderLeft: '6px solid ' + levelColor(a.riskLevel), background: '#f4f6f9', padding: 12, marginTop: 10 }}>
+                <strong>{a.locationName}</strong> - {a.disasterType}
+                <span style={{ marginLeft: 8, padding: '2px 10px', borderRadius: 3, background: levelColor(a.riskLevel), color: 'white', fontSize: 12, fontWeight: 700 }}>
+                  {a.riskLevel}
+                </span>
+                <span style={{ float: 'right', fontSize: 12, color: '#777' }}>
+                  {a.source === 'OFFICIAL' ? 'Official alert' : 'WeatherGuard analysis'}
+                </span>
+                <div style={{ fontSize: 14, color: '#444', marginTop: 6 }}>{a.message}</div>
+                <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{new Date(a.createdAt).toLocaleString()}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <KeralaTrends />
+      <p style={{ textAlign: 'center', background: 'white', margin: 0, padding: '0 0 30px' }}>
+        <Link to="/trends" style={{ color: '#0b3d6b', fontWeight: 600 }}>Look up trends for a single location</Link>
+      </p>
+
+      <div style={{ padding: '40px 30px', maxWidth: 800, margin: '0 auto' }}>
         <h2>About WeatherGuard</h2>
         <p style={{ lineHeight: 1.7, color: '#333' }}>
-          WeatherGuard is an integrated platform designed to help citizens and local authorities stay informed
-          about weather conditions and potential disaster risks. By combining live weather data with automated
-          risk analysis, the platform delivers timely alerts and actionable emergency guidance, aiming to
-          improve disaster preparedness across communities.
+          WeatherGuard combines live weather data from Open-Meteo with a multi-factor risk score for each of Kerala's 14 districts.
+          For floods, lightning, cyclone winds and heatwaves it explains why a risk level was given, raises alerts when risk
+          rises, and shows the safety guidance that applies. It is a decision-support tool and does not replace official
+          warnings from IMD or KSDMA.
         </p>
       </div>
 
-      <div id="features" style={{ padding: '50px 30px', background: 'white' }}>
-        <h2 style={{ textAlign: 'center' }}>Platform Features</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, maxWidth: 1000, margin: '30px auto 0' }}>
-          <Link to="/dashboard" style={{ border: '1px solid #d5d9dd', borderRadius: 4, padding: 20, textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <h4>Live Weather Data</h4>
-            <p style={{ fontSize: 14, color: '#555' }}>Real-time temperature, humidity, wind, and precipitation for any location.</p>
-          </Link>
-          <Link to="/risk-alerts" style={{ border: '1px solid #d5d9dd', borderRadius: 4, padding: 20, textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <h4>Risk Analysis</h4>
-            <p style={{ fontSize: 14, color: '#555' }}>Automatic risk scoring based on live weather thresholds.</p>
-          </Link>
-          <Link to="/guidelines" style={{ border: '1px solid #d5d9dd', borderRadius: 4, padding: 20, textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <h4>Emergency Alerts</h4>
-            <p style={{ fontSize: 14, color: '#555' }}>Actionable alerts linked directly to official safety guidelines.</p>
-          </Link>
-          <Link to="/trends" style={{ border: '1px solid #d5d9dd', borderRadius: 4, padding: 20, textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <h4>Weather Trends</h4>
-            <p style={{ fontSize: 14, color: '#555' }}>Visualized historical data to track patterns over time.</p>
-          </Link>
-        </div>  
-      </div>
-
-      <div className="gov-footer">
-        <p>&copy; 2026 WeatherGuard. A student initiative for disaster preparedness.</p>
-        <p><Link to="/contact" style={{ color: '#d5d9dd' }}>Contact Us</Link></p>
-      </div>
+      <Footer />
     </div>
   );
 }

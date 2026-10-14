@@ -56,21 +56,7 @@ public class ProfileController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
-    @PostMapping("/make-admin")
-public ResponseEntity<?> makeAdmin(@RequestHeader("Authorization") String authHeader) {
-    try {
-        String email = getEmailFromToken(authHeader);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setRole("ADMIN");
-        userRepository.save(user);
-        return ResponseEntity.ok(Map.of("message", "You are now an admin", "role", user.getRole()));
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-    }
-}
-
-
+   
     @PutMapping
     public ResponseEntity<?> updateProfile(
             @RequestHeader("Authorization") String authHeader,

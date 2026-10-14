@@ -1,15 +1,11 @@
 package com.weatherguard.backend.controller;
 
-import java.util.Map;
-
+import com.weatherguard.backend.service.SeasonalFloodOutlookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.weatherguard.backend.service.SeasonalFloodOutlookService;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ml")
@@ -22,15 +18,15 @@ public class SeasonalOutlookController {
     public ResponseEntity<?> getFloodOutlook(
             @RequestParam double annualRainfall,
             @RequestParam double monsoonRainfall) {
-        double probability = outlookService.predictFloodProbability(annualRainfall, monsoonRainfall);
-        String level = outlookService.classify(probability);
+        double output = outlookService.predictFloodProbability(annualRainfall, monsoonRainfall);
 
         return ResponseEntity.ok(Map.of(
                 "annualRainfall", annualRainfall,
                 "monsoonRainfall", monsoonRainfall,
-                "floodProbability", Math.round(probability * 10000.0) / 10000.0,
-                "outlookLevel", level,
-                "modelInfo", "Logistic regression trained on 118 years (1901-2018) of Kerala rainfall data"
+                "modelOutput", Math.round(output * 10000.0) / 10000.0,
+                "floodYearOutlook", outlookService.classify(output),
+                "modelInfo", "Logistic regression on 118 years (1901-2018) of Kerala annual and monsoon rainfall; 95.8% cross-validated accuracy for classifying a year as flood or no-flood.",
+                "note", "The dataset's flood labels follow an annual rainfall cut-off near 2925 mm, so the output switches sharply around that value. It classifies a completed season and is not a forecast."
         ));
     }
 }
